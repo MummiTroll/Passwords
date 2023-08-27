@@ -1,7 +1,5 @@
 # Passwords
 
-Small app to generate sets of randomized symbol sequences)
-
 The app generates N random sequences (Total sequences) of the predefined length (Length of sequences) with the additional randomization complexity (Complexity) and saves them into a file (File). 
 
 Complexity
