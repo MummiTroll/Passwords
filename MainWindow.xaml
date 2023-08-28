@@ -118,7 +118,13 @@
 
             <Label Content="{Binding Warning, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="4" Width="Auto"  Height="25"  FontFamily="SegoeUI" FontSize="12" VerticalAlignment="Center"
                    Margin="0,3,0,0" HorizontalAlignment="Left" Foreground="Red"/>
-
+            
+            <!--##### Progress bar #####-->
+            <ProgressBar x:Name="pb" Grid.Row="6" Grid.Column="2" Grid.ColumnSpan="3"  Height="5" Width="180" HorizontalAlignment="Left" VerticalAlignment="Center"
+                     Background="#A9A9A9" Foreground="Limegreen" BorderBrush="#A9A9A9" Visibility="{Binding ProgressBarVis, Mode=OneWay, FallbackValue=vis}"
+                             Margin="0,0,0,4" Value="{Binding Value1, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="100" IsIndeterminate="False"/>
+            <!--##### End of progress bar #####-->
+            
             <!--Buttons-->
             <Button Name="ResultPathDel" Command="{Binding ClearBox}" CommandParameter="DT" Grid.Row="5" Grid.Column="4" Margin="0,0,5,0" HorizontalAlignment="Right" BorderBrush="Black" BorderThickness="1" VerticalAlignment="Center" Width="16" Height="16" Cursor="Arrow"
                     Visibility="{Binding DelVis, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">

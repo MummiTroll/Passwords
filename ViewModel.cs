@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -19,6 +20,8 @@ namespace Passwords
         public MainWindow MainWindow { get; set; }
         public Write write = new Write();
         public Random r = new Random();
+        public Task T;
+        public BackgroundWorker worker;
         #endregion
         #region Properties
         private int n { get; set; } = 5;
@@ -247,6 +250,22 @@ namespace Passwords
                 }
             }
         }
+        private double nValue1 { get; set; }
+        public double Value1
+        {
+            get
+            {
+                return nValue1;
+            }
+            set
+            {
+                if (nValue1 != value)
+                {
+                    nValue1 = value;
+                }
+                OnPropertyChange(nameof(Value1));
+            }
+        }
         public List<string> TotalListofSymbols { get; set; }
         public List<string> NormSymbolsList = new List<string>(){ "a", "A", "b", "B", "c", "C", "d", "D", "e", "E", "f", "F",
             "g", "G", "h", "H", "i", "I", "j", "J", "k", "K", "l", "L","m","M","n","N","o","O","p","P","q","Q","r","R",
@@ -340,6 +359,19 @@ namespace Passwords
                 OnPropertyChange(nameof(SettingsVis));
             }
         }
+        private Visibility progressBarVis { get; set; } = Visibility.Hidden;
+        public Visibility ProgressBarVis
+        {
+            get { return progressBarVis; }
+            set
+            {
+                if (progressBarVis != value)
+                {
+                    progressBarVis = value;
+                }
+                OnPropertyChange(nameof(ProgressBarVis));
+            }
+        }
         #endregion
         #endregion
         #region Commands
@@ -364,6 +396,8 @@ namespace Passwords
         }
         public void Start()
         {
+            if(File.Exists(Target))File.Delete(Target);
+            ProgressBarVis = Visibility.Visible;
             TotalListofSymbols = new List<string>();
             if (Sequences)
             {
@@ -392,7 +426,11 @@ namespace Passwords
                 {
                     AddList(CurrenciesList);
                 }
-                CompileSeqs();
+                worker = new BackgroundWorker();
+                worker.DoWork += (obj, e) => CompileSeqs(1, "");
+                worker.ProgressChanged += new ProgressChangedEventHandler(worker_ProgressChanged);
+                worker.WorkerReportsProgress = true;
+                worker.RunWorkerAsync();
             }
             else if (Dictionary)
             {
@@ -404,10 +442,14 @@ namespace Passwords
                 {
                     Warning = "Dictionary file is missing!"; return;
                 }
-                CompileDic();
+                worker = new BackgroundWorker();
+                worker.DoWork += (obj, e) => CompileDic(1, "");
+                worker.ProgressChanged += new ProgressChangedEventHandler(worker_ProgressChanged);
+                worker.WorkerReportsProgress = true;
+                worker.RunWorkerAsync();
             }
         }
-        private void CompileSeqs()
+        public void CompileSeqs(object sender, string text)
         {
             int count = TotalListofSymbols.Count;
             int lengthComplexity = Length * Complexity;
@@ -427,14 +469,13 @@ namespace Passwords
                         LineFinal += ListTmp[r.Next(0, ListTmp.Count)];
                     }
                     writer.WriteLine(LineFinal);
+                    worker.ReportProgress(i * 100 / N);
                 }
             }
+            ProgressBarVis = Visibility.Hidden;
         }
-        private void CompileDic()
+        private void CompileDic(object sender, string text)
         {
-            if (!String.IsNullOrEmpty(SeparatorSymbol))
-            {
-            }
             int count = TotalListofSymbols.Count;
             int lengthComplexity = Length * Complexity;
             using (var writer = new StreamWriter(Target, true, Encoding.Default, 131072))
@@ -459,8 +500,14 @@ namespace Passwords
                         }
                     }
                     writer.WriteLine(LineFinal);
+                    worker.ReportProgress((i+1) * 100 / N);
                 }
             }
+            ProgressBarVis = Visibility.Hidden;
+        }
+        public void worker_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            MainWindow.pb.Value = e.ProgressPercentage;
         }
         private void AddList(List<string> list)
         {
@@ -612,7 +659,7 @@ namespace Passwords
         }
         private void ExitApp()
         {
-            Application.Current.Shutdown();
+            System.Windows.Application.Current.Shutdown();
         }
         private void OnPropertyChange(string property)
         {
