@@ -14,6 +14,7 @@ The app uses lists to generate random sequences of symbols:
 - Extra symbols
 - German letters
 - Currencies
+
 The lists can be turned on/off in “Settings”.
 
 Dictionary
