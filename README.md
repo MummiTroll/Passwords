@@ -8,14 +8,12 @@ Since the randomization algorythm is not completely random, additional step gene
 
 Sequences 
 
-The app uses lists to generate random sequences of symbols:
+The app uses lists to generate random sequences of symbols, they can be turned on/off in “Settings”:
 - Latin letters
 - Numbers
 - Extra symbols
 - German letters
 - Currencies
-
-The lists can be turned on/off in “Settings”.
 
 Dictionary
 
